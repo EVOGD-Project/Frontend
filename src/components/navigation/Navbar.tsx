@@ -1,8 +1,10 @@
 'use client';
 
-import { Button, Flex, Heading, Link } from '@chakra-ui/react';
+import { Button, Flex, Heading } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+	const router = useRouter();
 	return (
 		<Flex
 			w='100%'
@@ -31,9 +33,9 @@ export default function Navbar() {
 				</Flex>
 			</Flex>
 			<Flex gap='10px' alignItems='end' direction='column'>
-				<Link color='#CAE3FFFF' href='/'>
+				<Button color='#CAE3FFFF' onMouseEnter={() => router.prefetch('/')} onClick={() => router.push('/')}>
 					Home
-				</Link>
+				</Button>
 			</Flex>
 		</Flex>
 	);

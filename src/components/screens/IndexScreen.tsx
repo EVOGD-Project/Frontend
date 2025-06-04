@@ -1,11 +1,5 @@
-import { Flex } from '@chakra-ui/react';
-import Navbar from '../navigation/Navbar';
+import { Text } from '@chakra-ui/react';
 
 export default function IndexScreen() {
-	return (
-		<Flex w='100%' h='100%' gap='0px' direction='column'>
-			<Navbar />
-            
-		</Flex>
-	);
+	return <Text>Prueba</Text>;
 }

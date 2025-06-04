@@ -1,6 +1,7 @@
 'use client';
 
-import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react';
+import Navbar from '@/components/navigation/Navbar';
+import { ChakraProvider, ColorModeScript, Flex, extendTheme } from '@chakra-ui/react';
 import { Provider as JotaiProvider } from 'jotai';
 const theme = extendTheme({
 	config: {
@@ -43,7 +44,12 @@ export default function RootLayout({
 			>
 				<ColorModeScript initialColorMode={theme['config'].initialColorMode} />
 				<ChakraProvider theme={theme}>
-					<JotaiProvider>{children}</JotaiProvider>
+					<JotaiProvider>
+						<Flex w='100%' h='100%' gap='0px' direction='column'>
+							<Navbar />
+							{children}
+						</Flex>
+					</JotaiProvider>
 				</ChakraProvider>
 			</body>
 		</html>
