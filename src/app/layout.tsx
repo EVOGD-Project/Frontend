@@ -37,7 +37,8 @@ export default function RootLayout({
 					width: '100%',
 					height: '100%',
 					overflow: 'hidden',
-					color: '#FFFFFF'
+					color: '#CAE3FFFF',
+					background: '#353535FF'
 				}}
 			>
 				<ColorModeScript initialColorMode={theme['config'].initialColorMode} />
