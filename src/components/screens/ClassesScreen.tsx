@@ -1,14 +1,6 @@
 'use client';
 
-import {
-	Box,
-	Container,
-	Flex,
-	Heading,
-	SimpleGrid,
-	Text,
-	useDisclosure
-} from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, SimpleGrid, Text, useDisclosure } from '@chakra-ui/react';
 import ClassroomCard from '../general/ClassroomCard';
 import { classrooms } from '../mocks/classrooms';
 import CreateClassModal from '../modals/CreateClassModal';
