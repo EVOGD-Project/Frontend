@@ -5,46 +5,47 @@
     "private": true,
     "type": "module",
     "scripts": {
-      "build": "bun next build",
-      "dev": "bun next dev",
-      "lint": "bun run lint:biome && bun run lint:tsc && bun run lint:eslint",
-      "lint:biome": "bun biome check --write .",
-      "lint:tsc": "bun tsc --noEmit",
-      "lint:eslint": "bun eslint --fix",
-      "prod": "bun run build && bun run start",
-      "start": "bun next start"
+        "build": "bun next build",
+        "dev": "bun next dev",
+        "lint": "bun run lint:biome && bun run lint:tsc && bun run lint:eslint",
+        "lint:biome": "bun biome check --write .",
+        "lint:tsc": "bun tsc --noEmit",
+        "lint:eslint": "bun eslint --fix",
+        "prod": "bun run build && bun run start",
+        "start": "bun next start"
     },
     "dependencies": {
-      "@chakra-ui/icons": "^2.2.4",
-      "@chakra-ui/next-js": "^2.4.2",
-      "@chakra-ui/react": "2.10.2",
-      "@chakra-ui/system": "^2.6.2",
-      "@emotion/cache": "^11.14.0",
-      "@emotion/react": "^11.14.0",
-      "@emotion/styled": "^11.14.0",
-      "@fontsource/inter": "^5.2.5",
-      "@next/bundle-analyzer": "^15.2.3",
-      "framer-motion": "^11.18.2",
-      "jotai": "^2.12.2",
-      "million": "2.6.4",
-      "next": "^14.2.25",
-      "react": "19.0.0",
-      "react-dom": "19.0.0",
-      "react-icons": "^5.5.0",
-      "sharp": "^0.33.5",
-      "typescript": "5.7.2",
-      "utf-8-validate": "^6.0.5"
+        "@chakra-ui/icons": "^2.2.4",
+        "@chakra-ui/next-js": "^2.4.2",
+        "@chakra-ui/react": "2.10.2",
+        "@chakra-ui/system": "^2.6.2",
+        "@emotion/cache": "^11.14.0",
+        "@emotion/react": "^11.14.0",
+        "@emotion/styled": "^11.14.0",
+        "@fontsource/inter": "^5.2.5",
+        "@next/bundle-analyzer": "^15.2.3",
+        "date-fns": "^4.1.0",
+        "framer-motion": "^11.18.2",
+        "jotai": "^2.12.2",
+        "million": "2.6.4",
+        "next": "^14.2.25",
+        "react": "19.0.0",
+        "react-dom": "19.0.0",
+        "react-icons": "^5.5.0",
+        "react-markdown": "^10.1.0",
+        "sharp": "^0.33.5",
+        "typescript": "5.7.2",
+        "utf-8-validate": "^6.0.5"
     },
     "devDependencies": {
-      "@biomejs/biome": "^1.9.4",
-      "@types/node": "22.10.2",
-      "@types/react": "19.0.2",
-      "@types/react-dom": "19.0.2",
-      "eslint": "^9.22.0",
-      "eslint-config-next": "^15.2.3"
+        "@biomejs/biome": "^1.9.4",
+        "@types/node": "22.10.2",
+        "@types/react": "19.0.2",
+        "@types/react-dom": "19.0.2",
+        "eslint": "^9.22.0",
+        "eslint-config-next": "^15.2.3"
     },
     "trustedDependencies": [
-      "@biomejs/biome"
+        "@biomejs/biome"
     ]
-  }
-  
+}
