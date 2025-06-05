@@ -22,7 +22,7 @@ interface JoinClassModalProps {
 	onClose: () => void;
 }
 
-export default function JoinClassModal({ isOpen, onClose }: JoinClassModalProps) {
+export default function JoinClassModal({ isOpen, onClose }: Readonly<JoinClassModalProps>) {
 	const [code, setCode] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	const toast = useToast();
@@ -52,7 +52,7 @@ export default function JoinClassModal({ isOpen, onClose }: JoinClassModalProps)
 				isClosable: true
 			});
 			onClose();
-		} catch (error) {
+		} catch {
 			toast({
 				title: 'Error',
 				description: 'El código ingresado no es válido',
