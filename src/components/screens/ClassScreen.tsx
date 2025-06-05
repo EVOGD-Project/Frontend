@@ -85,7 +85,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 								name={classroom.owner}
 								src='https://avatars.githubusercontent.com/u/57068341?v=4'
 							/>
-							<Text color='gray.400'>Ángel</Text>
+							<Text color='gray.300'>Ángel</Text>
 						</VStack>
 					</Grid>
 				</Container>
@@ -131,7 +131,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 
 						<Box py={8}>
 							<TabPanels>
-								<TabPanel p={0}>
+								<TabPanel p={0} className='animate-fade-in'>
 									<VStack spacing={8} align='stretch'>
 										<Box>
 											<Heading size='lg' mb={6}>
@@ -157,7 +157,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 									</VStack>
 								</TabPanel>
 
-								<TabPanel p={0}>
+								<TabPanel p={0} className='animate-fade-in'>
 									<VStack spacing={8} align='stretch'>
 										<Box>
 											<Heading size='lg' mb={6}>
