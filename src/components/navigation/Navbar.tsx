@@ -27,7 +27,7 @@ const NAV_ITEMS = [
 		href: '/'
 	},
 	{
-		label: 'Clases',
+		label: 'Mis Clases',
 		href: '/classes'
 	}
 ];

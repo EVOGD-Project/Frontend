@@ -1,6 +1,8 @@
 'use client';
 
+import { activities } from '@/mocks/activities';
 import { classrooms } from '@/mocks/classrooms';
+import type { IActivity } from '@/types/IActivity';
 import {
 	Avatar,
 	Box,
@@ -18,14 +20,28 @@ import {
 	TabPanels,
 	Tabs,
 	Text,
-	VStack
+	VStack,
+	useDisclosure
 } from '@chakra-ui/react';
-import { FiCode, FiFileText, FiUsers } from 'react-icons/fi';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { FiCode, FiFileText, FiPlus, FiUsers } from 'react-icons/fi';
+import ActivityCard from '../general/ActivityCard';
+import CreateActivityModal from '../modals/CreateActivityModal';
 
 export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	const classroom = classrooms.find((c) => c.id === id);
+	const router = useRouter();
+	const [classActivities, setClassActivities] = useState<IActivity[]>(
+		activities.filter((activity) => activity.classroomId === id)
+	);
+	const { isOpen, onOpen, onClose } = useDisclosure();
 
 	if (!classroom && typeof location !== 'undefined') location.href = '/';
+
+	const handleActivityCreated = (activity: IActivity) => {
+		setClassActivities((prev) => [...prev, activity]);
+	};
 
 	return classroom ? (
 		<Box as='main' className='animate-fade-in'>
@@ -133,10 +149,33 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 							<TabPanels>
 								<TabPanel p={0} className='animate-fade-in'>
 									<VStack spacing={8} align='stretch'>
-										<Box>
-											<Heading size='lg' mb={6}>
-												Actividades
-											</Heading>
+										<Flex justify='space-between' align='center'>
+											<Heading size='lg'>Actividades</Heading>
+											<Button leftIcon={<FiPlus />} colorScheme='blue' onClick={onOpen} size='sm'>
+												Crear actividad
+											</Button>
+										</Flex>
+
+										{classActivities.length > 0 ? (
+											<Grid
+												templateColumns={{
+													base: '1fr',
+													sm: 'repeat(2, 1fr)',
+													lg: 'repeat(3, 1fr)'
+												}}
+												gap={4}
+											>
+												{classActivities.map((activity) => (
+													<ActivityCard
+														key={activity.id}
+														activity={activity}
+														onClick={() =>
+															router.push(`/classes/${id}/activities/${activity.id}`)
+														}
+													/>
+												))}
+											</Grid>
+										) : (
 											<Flex
 												direction='column'
 												align='center'
@@ -151,9 +190,11 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 												<Text fontSize='lg' color='gray.400'>
 													No hay actividades disponibles
 												</Text>
-												<Button variant='outline'>Crear actividad</Button>
+												<Button variant='outline' onClick={onOpen}>
+													Crear actividad
+												</Button>
 											</Flex>
-										</Box>
+										)}
 									</VStack>
 								</TabPanel>
 
@@ -222,6 +263,13 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 					</Tabs>
 				</Container>
 			</Box>
+
+			<CreateActivityModal
+				isOpen={isOpen}
+				onClose={onClose}
+				classroomId={id}
+				onActivityCreated={handleActivityCreated}
+			/>
 		</Box>
 	) : null;
 }

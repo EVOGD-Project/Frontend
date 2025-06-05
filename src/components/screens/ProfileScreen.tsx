@@ -14,8 +14,8 @@ import {
 	useDisclosure
 } from '@chakra-ui/react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
-import ClassroomCard from '../general/ClassroomCard';
 import { classrooms } from '../../mocks/classrooms';
+import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
 import JoinClassModal from '../modals/JoinClassModal';
 
@@ -27,7 +27,6 @@ const mockUser = {
 
 export default function ProfileScreen() {
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
-	const { isOpen: isJoinOpen, onOpen: onJoinOpen, onClose: onJoinClose } = useDisclosure();
 
 	const myClasses = classrooms.slice(0, 4);
 
@@ -52,8 +51,8 @@ export default function ProfileScreen() {
 							<Button leftIcon={<FiPlus />} colorScheme='blue' onClick={onCreateOpen}>
 								Crear Clase
 							</Button>
-							<Button leftIcon={<FiUsers />} variant='outline' onClick={onJoinOpen}>
-								Unirse a Clase
+							<Button leftIcon={<FiUsers />} variant='outline'>
+								Editar cuenta
 							</Button>
 						</Flex>
 					</Grid>
@@ -64,7 +63,7 @@ export default function ProfileScreen() {
 				<VStack spacing={8} align='stretch'>
 					<Box>
 						<Heading size='lg' mb={6}>
-							Mis Clases
+							Clases Destacadas
 						</Heading>
 						{myClasses.length > 0 ? (
 							<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
@@ -97,7 +96,6 @@ export default function ProfileScreen() {
 			</Container>
 
 			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} />
-			<JoinClassModal isOpen={isJoinOpen} onClose={onJoinClose} />
 		</Box>
 	);
 }
