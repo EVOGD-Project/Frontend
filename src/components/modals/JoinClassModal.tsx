@@ -32,6 +32,7 @@ export default function JoinClassModal({ isOpen, onClose }: JoinClassModalProps)
 			toast({
 				title: 'Error',
 				description: 'Por favor ingresa el código de la clase',
+				position: 'top-right',
 				status: 'error',
 				duration: 3000,
 				isClosable: true
@@ -45,6 +46,7 @@ export default function JoinClassModal({ isOpen, onClose }: JoinClassModalProps)
 			toast({
 				title: 'Éxito',
 				description: 'Te has unido a la clase correctamente',
+				position: 'top-right',
 				status: 'success',
 				duration: 3000,
 				isClosable: true
@@ -54,6 +56,7 @@ export default function JoinClassModal({ isOpen, onClose }: JoinClassModalProps)
 			toast({
 				title: 'Error',
 				description: 'El código ingresado no es válido',
+				position: 'top-right',
 				status: 'error',
 				duration: 3000,
 				isClosable: true
