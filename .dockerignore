@@ -1,7 +1,6 @@
 *
 !public/
 !src/
-!bun.lock
 !next.config.js
 !package.json
 !tsconfig.json
