@@ -38,6 +38,7 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 				title: 'Error',
 				description: 'Por favor completa todos los campos requeridos',
 				status: 'error',
+				position: 'top-right',
 				duration: 3000,
 				isClosable: true
 			});
@@ -51,6 +52,7 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 				title: 'Clase creada',
 				description: 'La clase se ha creado exitosamente',
 				status: 'success',
+				position: 'top-right',
 				duration: 3000,
 				isClosable: true
 			});
@@ -59,6 +61,7 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 			toast({
 				title: 'Error',
 				description: 'Ocurrió un error al crear la clase',
+				position: 'top-right',
 				status: 'error',
 				duration: 3000,
 				isClosable: true
