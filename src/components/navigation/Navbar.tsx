@@ -51,7 +51,13 @@ export default function Navbar() {
 		>
 			<Container maxW='container.xl'>
 				<Flex h={16} align='center' justify='space-between'>
-					<Flex align='center' gap={2} cursor='pointer' onClick={() => router.push('/')}>
+					<Flex
+						align='center'
+						gap={2}
+						cursor='pointer'
+						onMouseEnter={() => router.prefetch('/')}
+						onClick={() => router.push('/')}
+					>
 						<Icon as={FiBook} boxSize={6} color='brand.primary.400' />
 						<Text fontSize='xl' fontWeight='extrabold'>
 							<Box as='span' color='brand.primary.400'>
@@ -63,7 +69,12 @@ export default function Navbar() {
 
 					<HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
 						{NAV_ITEMS.map((item) => (
-							<Button key={item.label} variant='ghost' onClick={() => router.push(item.href)}>
+							<Button
+								key={item.label}
+								variant='ghost'
+								onMouseEnter={() => router.prefetch(item.href)}
+								onClick={() => router.push(item.href)}
+							>
 								{item.label}
 							</Button>
 						))}
@@ -115,11 +126,23 @@ export default function Navbar() {
 			<Box display={{ base: isMenuOpen ? 'block' : 'none', md: 'none' }} pb={4} bg='brand.dark.900'>
 				<Stack spacing={4} px={4}>
 					{NAV_ITEMS.map((item) => (
-						<Button key={item.label} w='full' variant='ghost' onClick={() => router.push(item.href)}>
+						<Button
+							key={item.label}
+							w='full'
+							variant='ghost'
+							onMouseEnter={() => router.prefetch(item.href)}
+							onClick={() => router.push(item.href)}
+						>
 							{item.label}
 						</Button>
 					))}
-					<Button w='full' leftIcon={<FiUser />} variant='outline' onClick={() => router.push('/profile')}>
+					<Button
+						w='full'
+						leftIcon={<FiUser />}
+						variant='outline'
+						onMouseEnter={() => router.prefetch('/profile')}
+						onClick={() => router.push('/profile')}
+					>
 						Mi Cuenta
 					</Button>
 				</Stack>
