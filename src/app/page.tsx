@@ -1,5 +1,5 @@
-import { Text } from '@chakra-ui/react';
+import IndexScreen from '@/components/screens/IndexScreen';
 
 export default function IndexPage() {
-	return <Text>Prueba</Text>;
+	return <IndexScreen />;
 }
