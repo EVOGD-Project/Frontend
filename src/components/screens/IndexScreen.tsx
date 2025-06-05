@@ -4,7 +4,7 @@ import { Box, Button, Container, Flex, Heading, SimpleGrid, Text } from '@chakra
 import { useRouter } from 'next/navigation';
 import { FiBookOpen } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
-import { classrooms } from '../mocks/classrooms';
+import { classrooms } from '../../mocks/classrooms';
 
 export default function IndexScreen() {
 	const router = useRouter();

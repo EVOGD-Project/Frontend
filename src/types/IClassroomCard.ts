@@ -4,9 +4,5 @@ export interface IClassroomCard {
 	description: string;
 	thumbnailId: number;
 	code: string;
-	owner: {
-		id: string;
-		name: string;
-		avatar?: string;
-	};
+	owner: string;
 }

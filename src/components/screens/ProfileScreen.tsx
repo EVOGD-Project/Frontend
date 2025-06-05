@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
-import { classrooms } from '../mocks/classrooms';
+import { classrooms } from '../../mocks/classrooms';
 import CreateClassModal from '../modals/CreateClassModal';
 import JoinClassModal from '../modals/JoinClassModal';
 

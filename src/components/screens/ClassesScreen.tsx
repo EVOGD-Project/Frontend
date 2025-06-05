@@ -2,7 +2,7 @@
 
 import { Box, Container, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import ClassroomCard from '../general/ClassroomCard';
-import { classrooms } from '../mocks/classrooms';
+import { classrooms } from '../../mocks/classrooms';
 
 export default function ClassesScreen() {
 	return (
