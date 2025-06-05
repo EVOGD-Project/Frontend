@@ -1,15 +1,10 @@
 'use client';
 
-import { Box, Container, Flex, Heading, SimpleGrid, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Container, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
 import ClassroomCard from '../general/ClassroomCard';
 import { classrooms } from '../mocks/classrooms';
-import CreateClassModal from '../modals/CreateClassModal';
-import JoinClassModal from '../modals/JoinClassModal';
 
 export default function ClassesScreen() {
-	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
-	const { isOpen: isJoinOpen, onOpen: onJoinOpen, onClose: onJoinClose } = useDisclosure();
-
 	return (
 		<Box as='main' className='animate-fade-in'>
 			<Box bg='brand.dark.900' py={12}>
@@ -30,9 +25,6 @@ export default function ClassesScreen() {
 					))}
 				</SimpleGrid>
 			</Container>
-
-			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} />
-			<JoinClassModal isOpen={isJoinOpen} onClose={onJoinClose} />
 		</Box>
 	);
 }

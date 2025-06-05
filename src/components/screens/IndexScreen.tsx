@@ -35,7 +35,7 @@ export default function IndexScreen() {
 							El mejor reemplazo de EVAGD.
 						</Heading>
 						<Text fontSize='xl' maxW='container.md' mb={8}>
-							¿EVAGD va lento? ¿Está caido? ¿No funciona? Únete a <b>EVOGD</b>, la revolución.
+							¿EVAGD va lento? ¿Está caído? ¿No funciona? Únete a <b>EVOGD</b>, la revolución.
 						</Text>
 						<Flex gap={4}>
 							<Button
