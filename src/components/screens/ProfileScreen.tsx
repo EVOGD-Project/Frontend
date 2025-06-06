@@ -17,7 +17,6 @@ import { FiPlus, FiUsers } from 'react-icons/fi';
 import { classrooms } from '../../mocks/classrooms';
 import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
-import JoinClassModal from '../modals/JoinClassModal';
 
 const mockUser = {
 	name: 'Ángel',

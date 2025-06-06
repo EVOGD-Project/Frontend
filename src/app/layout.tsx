@@ -1,6 +1,7 @@
 'use client';
 
 import Navbar from '@/components/navigation/Navbar';
+import AuthProvider from '@/components/providers/AuthProvider';
 import { theme } from '@/theme/theme';
 import { ChakraProvider, ColorModeScript, Flex } from '@chakra-ui/react';
 import { Provider as JotaiProvider } from 'jotai';
@@ -40,10 +41,10 @@ export default function RootLayout({
 						to { transform: translateX(0); opacity: 1; }
 					}
 					.animate-fade-in {
-						animation: fadeIn 0.5s ease-out forwards;
+						animation: fadeIn 0.3s ease-out forwards;
 					}
 					.animate-slide-in {
-						animation: slideIn 0.5s ease-out forwards;
+						animation: slideIn 0.3s ease-out forwards;
 					}
 					::-webkit-scrollbar {
 						width: 8px;
@@ -73,12 +74,14 @@ export default function RootLayout({
 				<ColorModeScript initialColorMode={theme['config'].initialColorMode} />
 				<ChakraProvider theme={theme}>
 					<JotaiProvider>
-						<Flex w='100%' h='100%' direction='column'>
-							<Navbar />
-							<Flex flex='1' overflowY='auto' direction='column' align='stretch'>
-								{children}
+						<AuthProvider>
+							<Flex w='100%' h='100%' direction='column'>
+								<Navbar />
+								<Flex flex='1' overflowY='auto' direction='column' align='stretch'>
+									{children}
+								</Flex>
 							</Flex>
-						</Flex>
+						</AuthProvider>
 					</JotaiProvider>
 				</ChakraProvider>
 			</body>

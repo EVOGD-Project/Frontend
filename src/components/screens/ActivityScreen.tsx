@@ -2,9 +2,7 @@
 
 import { activities } from '@/mocks/activities';
 import { classrooms } from '@/mocks/classrooms';
-import type { IActivity } from '@/types/IActivity';
 import {
-	Avatar,
 	Badge,
 	Box,
 	Button,
@@ -18,7 +16,6 @@ import {
 	Link,
 	ListItem,
 	OrderedList,
-	Stack,
 	Text,
 	UnorderedList,
 	VStack
