@@ -85,7 +85,7 @@ export default function IndexScreen() {
 					</Heading>
 					{isLoading ? (
 						<Flex h='200px' align='center' justify='center'>
-							<Spinner size='lg' />
+							<Spinner size='xl' borderWidth='4px' />
 						</Flex>
 					) : classrooms.length > 0 ? (
 						<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>

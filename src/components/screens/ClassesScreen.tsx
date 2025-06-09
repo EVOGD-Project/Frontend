@@ -2,7 +2,18 @@
 
 import { api } from '@/api/api';
 import type { IClassroom } from '@/types/IClassroomCard';
-import { Box, Button, Container, Flex, Grid, Heading, SimpleGrid, Text, useDisclosure } from '@chakra-ui/react';
+import {
+	Box,
+	Button,
+	Container,
+	Flex,
+	Grid,
+	Heading,
+	SimpleGrid,
+	Spinner,
+	Text,
+	useDisclosure
+} from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
@@ -61,7 +72,7 @@ export default function ClassesScreen() {
 			<Container maxW='container.xl' py={8}>
 				{isLoading ? (
 					<Flex h='200px' align='center' justify='center'>
-						<Text>Cargando...</Text>
+						<Spinner size='xl' borderWidth='4px' />
 					</Flex>
 				) : classrooms.length > 0 ? (
 					<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>

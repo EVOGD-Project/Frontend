@@ -75,7 +75,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	if (isLoading) {
 		return (
 			<Flex h='100%' align='center' justify='center'>
-				<Spinner size='lg' />
+				<Spinner size='xl' borderWidth='4px' />
 			</Flex>
 		);
 	}

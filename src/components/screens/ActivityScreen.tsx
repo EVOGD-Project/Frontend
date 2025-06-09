@@ -17,6 +17,7 @@ import {
 	Link,
 	ListItem,
 	OrderedList,
+	Spinner,
 	Text,
 	UnorderedList,
 	VStack,
@@ -79,7 +80,7 @@ export default function ActivityScreen({
 	if (isLoading) {
 		return (
 			<Flex h='100%' align='center' justify='center'>
-				<Text>Cargando...</Text>
+				<Spinner size='xl' borderWidth='4px' />
 			</Flex>
 		);
 	}

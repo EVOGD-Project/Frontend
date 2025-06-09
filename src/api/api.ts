@@ -21,7 +21,7 @@ export const api = {
 		},
 
 		getById: async (id: string): Promise<IClassroom> => {
-			const res = await fetch(`${API_URL}/classrooms/${id}`, {
+			const res = await fetch(`${API_URL}/classrooms/${encodeURIComponent(id)}`, {
 				headers: {
 					...getAuthHeaders()
 				}
@@ -57,7 +57,7 @@ export const api = {
 				thumbnailId: number;
 			}
 		): Promise<{ id: string }> => {
-			const res = await fetch(`${API_URL}/classrooms/${id}`, {
+			const res = await fetch(`${API_URL}/classrooms/${encodeURIComponent(id)}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
@@ -71,7 +71,8 @@ export const api = {
 		},
 
 		join: async (code: string): Promise<IClassroom> => {
-			const res = await fetch(`${API_URL}/classrooms/join/${code}`, {
+			const res = await fetch(`${API_URL}/classrooms/join/${encodeURIComponent(code)}`, {
+				method: 'POST',
 				headers: {
 					...getAuthHeaders()
 				}
@@ -84,7 +85,7 @@ export const api = {
 
 	activities: {
 		getByClassroom: async (classroomId: string): Promise<IActivity[]> => {
-			const res = await fetch(`${API_URL}/classrooms/${classroomId}/activities`, {
+			const res = await fetch(`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities`, {
 				headers: {
 					...getAuthHeaders()
 				}
@@ -95,11 +96,14 @@ export const api = {
 		},
 
 		getById: async (classroomId: string, activityId: string): Promise<IActivity> => {
-			const res = await fetch(`${API_URL}/classrooms/${classroomId}/activities/${activityId}`, {
-				headers: {
-					...getAuthHeaders()
+			const res = await fetch(
+				`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities/${encodeURIComponent(activityId)}`,
+				{
+					headers: {
+						...getAuthHeaders()
+					}
 				}
-			});
+			);
 
 			if (!res.ok) throw new Error('Failed to fetch activity');
 			return res.json();
@@ -122,7 +126,7 @@ export const api = {
 				};
 			}
 		): Promise<{ id: string }> => {
-			const res = await fetch(`${API_URL}/classrooms/${classroomId}/activities`, {
+			const res = await fetch(`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -153,14 +157,17 @@ export const api = {
 				};
 			}
 		): Promise<IActivity> => {
-			const res = await fetch(`${API_URL}/classrooms/${classroomId}/activities/${activityId}`, {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					...getAuthHeaders()
-				},
-				body: JSON.stringify(data)
-			});
+			const res = await fetch(
+				`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities/${encodeURIComponent(activityId)}`,
+				{
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						...getAuthHeaders()
+					},
+					body: JSON.stringify(data)
+				}
+			);
 
 			if (!res.ok) throw new Error('Failed to update activity');
 			return res.json();
