@@ -51,6 +51,7 @@ export default function JoinClassModal({ isOpen, onClose, onClassroomJoined }: R
 
 		setIsLoading(true);
 		try {
+			await api.classroom.join(code);
 			const updatedClassrooms = await api.classroom.getAll();
 			onClassroomJoined?.(updatedClassrooms);
 

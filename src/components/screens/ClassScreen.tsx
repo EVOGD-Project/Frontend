@@ -31,12 +31,15 @@ import { useEffect, useState } from 'react';
 import { FiCode, FiFileText, FiPlus, FiUsers } from 'react-icons/fi';
 import ActivityCard from '../general/ActivityCard';
 import CreateActivityModal from '../modals/CreateActivityModal';
+import type { IUser } from '@/types/IUser';
 
 export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	const [classroom, setClassroom] = useState<IClassroom | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const router = useRouter();
 	const [classActivities, setClassActivities] = useState<IActivity[]>([]);
+	const [classMembers, setClassMembers] = useState<IUser[]>([]);
+	const [isMembersLoading, setIsMembersLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const toast = useToast();
 
@@ -70,6 +73,28 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 
 	const handleActivityCreated = (activity: IActivity) => {
 		setClassActivities((prev) => [...prev, activity]);
+	};
+
+	const handleTabChange = async (index: number) => {
+		// Index 1 is the "Estudiantes" tab
+		if (index === 1 && classMembers.length === 0) {
+			setIsMembersLoading(true);
+			try {
+				const members = await api.classroom.getMembers(id);
+				setClassMembers(members);
+			} catch (error) {
+				toast({
+					title: 'Error',
+					description: 'No se pudo cargar la lista de estudiantes',
+					status: 'error',
+					position: 'top-right',
+					duration: 3000,
+					isClosable: true
+				});
+			} finally {
+				setIsMembersLoading(false);
+			}
+		}
 	};
 
 	if (isLoading) {
@@ -125,7 +150,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 							<Flex gap={6} color='gray.400'>
 								<Flex align='center' gap={2}>
 									<Icon as={FiUsers} />
-									<Text>24 estudiantes</Text>
+									<Text>{classMembers.length || '...'} estudiantes</Text>
 								</Flex>
 								<Flex align='center' gap={2}>
 									<Icon as={FiCode} />
@@ -148,7 +173,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 
 			<Box>
 				<Container maxW='container.xl'>
-					<Tabs variant='unstyled'>
+					<Tabs variant='unstyled' onChange={handleTabChange}>
 						<Box borderBottom='1px solid' borderColor='brand.dark.800'>
 							<TabList gap={4}>
 								<Tab
@@ -243,57 +268,47 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 											<Heading size='lg' mb={6}>
 												Estudiantes
 											</Heading>
-											<Grid
-												templateColumns={{
-													base: '1fr',
-													sm: 'repeat(2, 1fr)',
-													md: 'repeat(3, 1fr)'
-												}}
-												gap={4}
-											>
-												<Flex
-													p={4}
-													gap={4}
-													align='center'
-													bg='brand.dark.900'
-													borderRadius='xl'
-													border='1px solid'
-													borderColor='brand.dark.800'
-												>
-													<Avatar
-														size='md'
-														name='Ángel'
-														src='https://avatars.githubusercontent.com/u/57068341?v=4'
-													/>
-													<Box>
-														<Text fontWeight='bold'>Ángel</Text>
-														<Text fontSize='sm' color='brand.primary.400'>
-															Profesor
-														</Text>
-													</Box>
+											{isMembersLoading ? (
+												<Flex justify='center' py={8}>
+													<Spinner size='xl' />
 												</Flex>
-
-												{Array.from({ length: 5 }).map((_, i) => (
-													<Flex
-														key={i}
-														p={4}
-														gap={4}
-														align='center'
-														bg='brand.dark.900'
-														borderRadius='xl'
-														border='1px solid'
-														borderColor='brand.dark.800'
-													>
-														<Avatar size='md' name={`Estudiante ${i + 1}`} />
-														<Box>
-															<Text fontWeight='bold'>Estudiante {i + 1}</Text>
-															<Text fontSize='sm' color='gray.400'>
-																Estudiante
-															</Text>
-														</Box>
-													</Flex>
-												))}
-											</Grid>
+											) : (
+												<Grid
+													templateColumns={{
+														base: '1fr',
+														sm: 'repeat(2, 1fr)',
+														md: 'repeat(3, 1fr)'
+													}}
+													gap={4}
+												>
+													{classMembers.map((member) => (
+														<Flex
+															key={member.id}
+															p={4}
+															gap={4}
+															align='center'
+															bg='brand.dark.900'
+															borderRadius='xl'
+															border='1px solid'
+															borderColor='brand.dark.800'
+														>
+															<Avatar size='md' name={member.username} />
+															<Box>
+																<Text fontWeight='bold'>{member.username}</Text>
+																{member.id === classroom.owner ? (
+																	<Text fontSize='sm' color='brand.primary.400'>
+																		Profesor
+																	</Text>
+																) : (
+																	<Text fontSize='sm' color='gray.400'>
+																		Estudiante
+																	</Text>
+																)}
+															</Box>
+														</Flex>
+													))}
+												</Grid>
+											)}
 										</Box>
 									</VStack>
 								</TabPanel>
