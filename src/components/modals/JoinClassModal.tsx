@@ -1,5 +1,7 @@
 'use client';
 
+import { api } from '@/api/api';
+import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Button,
 	FormControl,
@@ -15,25 +17,32 @@ import {
 	VStack,
 	useToast
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface JoinClassModalProps {
 	isOpen: boolean;
 	onClose: () => void;
+	onClassroomJoined?: (classrooms: IClassroom[]) => void;
 }
 
-export default function JoinClassModal({ isOpen, onClose }: Readonly<JoinClassModalProps>) {
-	const [code, setCode] = useState('');
+export default function JoinClassModal({ isOpen, onClose, onClassroomJoined }: Readonly<JoinClassModalProps>) {
 	const [isLoading, setIsLoading] = useState(false);
+	const [code, setCode] = useState('');
 	const toast = useToast();
+
+	useEffect(() => {
+		if (isOpen) {
+			setCode('');
+		}
+	}, [isOpen]);
 
 	const handleSubmit = async () => {
 		if (!code.trim()) {
 			toast({
 				title: 'Error',
 				description: 'Por favor ingresa el código de la clase',
-				position: 'top-right',
 				status: 'error',
+				position: 'top-right',
 				duration: 3000,
 				isClosable: true
 			});
@@ -42,12 +51,14 @@ export default function JoinClassModal({ isOpen, onClose }: Readonly<JoinClassMo
 
 		setIsLoading(true);
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const updatedClassrooms = await api.classroom.getAll();
+			onClassroomJoined?.(updatedClassrooms);
+
 			toast({
 				title: 'Éxito',
 				description: 'Te has unido a la clase correctamente',
-				position: 'top-right',
 				status: 'success',
+				position: 'top-right',
 				duration: 3000,
 				isClosable: true
 			});
@@ -55,9 +66,9 @@ export default function JoinClassModal({ isOpen, onClose }: Readonly<JoinClassMo
 		} catch {
 			toast({
 				title: 'Error',
-				description: 'El código ingresado no es válido',
-				position: 'top-right',
+				description: 'El código de la clase es inválido',
 				status: 'error',
+				position: 'top-right',
 				duration: 3000,
 				isClosable: true
 			});
@@ -77,7 +88,7 @@ export default function JoinClassModal({ isOpen, onClose }: Readonly<JoinClassMo
 						<FormControl isRequired>
 							<FormLabel>Código de la Clase</FormLabel>
 							<Input
-								placeholder='Ingresa el código...'
+								placeholder='Ej: ABC123'
 								value={code}
 								onChange={(e) => setCode(e.target.value)}
 								bg='brand.dark.800'

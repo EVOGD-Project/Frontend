@@ -1,13 +1,32 @@
 'use client';
 
-import { Box, Button, Container, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
+import { api } from '@/api/api';
+import type { IClassroom } from '@/types/IClassroomCard';
+import { Box, Button, Container, Flex, Heading, SimpleGrid, Spinner, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { FiBookOpen } from 'react-icons/fi';
-import { classrooms } from '../../mocks/classrooms';
 import ClassroomCard from '../general/ClassroomCard';
 
 export default function IndexScreen() {
 	const router = useRouter();
+	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchClassrooms = async () => {
+			try {
+				const data = await api.classroom.getAll();
+				setClassrooms(data);
+			} catch (error) {
+				console.error('Failed to fetch classrooms:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchClassrooms();
+	}, []);
 
 	return (
 		<Box as='main' className='animate-fade-in'>
@@ -59,28 +78,43 @@ export default function IndexScreen() {
 				</Container>
 			</Box>
 
-			<Box py={16} bg='brand.dark.950'>
-				<Container maxW='container.xl'>
-					<Box mb={16}>
-						<Flex justify='space-between' align='center' mb={8}>
-							<Heading size='lg'>Clases Destacadas</Heading>
-							<Button
-								variant='ghost'
-								rightIcon={<FiBookOpen />}
-								onMouseEnter={() => router.prefetch('/classes')}
-								onClick={() => router.push('/classes')}
-							>
-								Todas las clases
-							</Button>
+			<Container maxW='container.xl' py={12}>
+				<Box>
+					<Heading size='lg' mb={6}>
+						Clases Destacadas
+					</Heading>
+					{isLoading ? (
+						<Flex h='200px' align='center' justify='center'>
+							<Spinner size='xl' borderWidth='4px' />
 						</Flex>
-						<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={{ base: 4, lg: 6 }}>
-							{classrooms.slice(0, 4).map((c) => (
-								<ClassroomCard item={c} key={c.id} />
+					) : classrooms.length > 0 ? (
+						<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
+							{classrooms.slice(0, 4).map((classroom) => (
+								<ClassroomCard key={classroom.id} item={classroom} />
 							))}
 						</SimpleGrid>
-					</Box>
-				</Container>
-			</Box>
+					) : (
+						<Flex
+							direction='column'
+							align='center'
+							justify='center'
+							py={16}
+							gap={4}
+							bg='brand.dark.900'
+							borderRadius='xl'
+							border='1px dashed'
+							borderColor='brand.dark.700'
+						>
+							<Text fontSize='lg' color='gray.400'>
+								No hay clases disponibles
+							</Text>
+							<Button leftIcon={<FiBookOpen />} variant='outline' onClick={() => router.push('/classes')}>
+								Explorar Clases
+							</Button>
+						</Flex>
+					)}
+				</Box>
+			</Container>
 		</Box>
 	);
 }

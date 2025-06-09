@@ -1,10 +1,9 @@
 'use client';
 
-import { activities } from '@/mocks/activities';
-import { classrooms } from '@/mocks/classrooms';
+import { api } from '@/api/api';
 import type { IActivity } from '@/types/IActivity';
+import type { IClassroom } from '@/types/IClassroomCard';
 import {
-	Avatar,
 	Badge,
 	Box,
 	Button,
@@ -18,13 +17,15 @@ import {
 	Link,
 	ListItem,
 	OrderedList,
-	Stack,
+	Spinner,
 	Text,
 	UnorderedList,
-	VStack
+	VStack,
+	useToast
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useEffect, useState } from 'react';
 import { FiCalendar, FiDownload, FiExternalLink, FiFileText } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 
@@ -43,13 +44,48 @@ export default function ActivityScreen({
 	classroomId,
 	activityId
 }: Readonly<{ classroomId: string; activityId: string }>) {
-	const activity = activities.find((a) => a.id === activityId && a.classroomId === classroomId);
-	const classroom = classrooms.find((c) => c.id === classroomId);
+	const [activity, setActivity] = useState<IActivity | null>(null);
+	const [classroom, setClassroom] = useState<IClassroom | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const toast = useToast();
 
-	if (!activity || !classroom) {
-		if (typeof location !== 'undefined') location.href = '/';
-		return null;
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const [activityData, classroomData] = await Promise.all([
+					api.activities.getById(classroomId, activityId),
+					api.classroom.getById(classroomId)
+				]);
+
+				setActivity(activityData);
+				setClassroom(classroomData);
+			} catch (error) {
+				toast({
+					title: 'Error',
+					description: 'No se pudo cargar la información de la actividad',
+					status: 'error',
+					position: 'top-right',
+					duration: 3000,
+					isClosable: true
+				});
+				if (typeof location !== 'undefined') location.href = '/';
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchData();
+	}, [activityId, classroomId, toast]);
+
+	if (isLoading) {
+		return (
+			<Flex h='100%' align='center' justify='center'>
+				<Spinner size='xl' borderWidth='4px' />
+			</Flex>
+		);
 	}
+
+	if (!activity || !classroom) return null;
 
 	return (
 		<Box as='main' className='animate-fade-in'>

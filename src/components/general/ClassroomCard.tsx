@@ -1,18 +1,19 @@
 'use client';
 
-import type { IClassroomCard } from '@/types/IClassroomCard';
+import { CDN_URL } from '@/constants/constants';
+import type { IClassroom } from '@/types/IClassroomCard';
 import { Box, Button, Card, CardBody, Flex, Heading, Image, Stack, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { FiUsers } from 'react-icons/fi';
 
-export default function ClassroomCard({ item }: Readonly<{ item: IClassroomCard }>) {
+export default function ClassroomCard({ item }: Readonly<{ item: IClassroom }>) {
 	const router = useRouter();
 
 	return (
 		<Card maxW='100%' onClick={() => router.push(`/classes/${item.id}`)} className='animate-fade-in'>
 			<Box position='relative' overflow='hidden'>
 				<Image
-					src={`https://evogd-cdn.tnfangel.com/thumbnails/thumbnail-${item.thumbnailId}.jpg`}
+					src={`${CDN_URL}/thumbnails/thumbnail-${item.thumbnailId}.jpg`}
 					alt={'Clase ' + item.name}
 					width='100%'
 					height='100px'

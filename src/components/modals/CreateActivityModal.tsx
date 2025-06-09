@@ -1,5 +1,6 @@
 'use client';
 
+import { api } from '@/api/api';
 import type { IActivity } from '@/types/IActivity';
 import {
 	Button,
@@ -64,12 +65,13 @@ export default function CreateActivityModal({
 
 		setIsLoading(true);
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const { id } = await api.activities.create(classroomId, formData);
 
 			const newActivity: IActivity = {
-				id: Math.random().toString(36).substring(7),
+				id,
 				...formData,
 				classroomId,
+				owner: 'Ángel',
 				createdAt: new Date().toISOString()
 			};
 

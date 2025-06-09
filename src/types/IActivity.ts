@@ -3,6 +3,7 @@ export interface IActivity {
 	title: string;
 	description: string;
 	classroomId: string;
+	owner: string;
 	dueDate?: string;
 	createdAt: string;
 	type: 'assignment' | 'material';
