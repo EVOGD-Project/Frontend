@@ -48,7 +48,9 @@ export default function ClassroomCard({ item }: Readonly<{ item: IClassroom }>) 
 					<Flex justify='space-between' align='center'>
 						<Flex align='center' gap={2}>
 							<FiUsers />
-							<Text fontSize='sm'>{item.memberCount} estudiantes</Text>
+							<Text fontSize='sm'>
+								{item.memberCount === 1 ? 'Sin ' : item.memberCount - 1} estudiantes
+							</Text>
 						</Flex>
 						<Button
 							size='sm'

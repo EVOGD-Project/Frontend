@@ -2,6 +2,7 @@
 
 import { api } from '@/api/api';
 import { CDN_URL } from '@/constants/constants';
+import { authAtom } from '@/store/auth';
 import type { IActivity } from '@/types/IActivity';
 import type { IClassroom } from '@/types/IClassroomCard';
 import type { IUser } from '@/types/IUser';
@@ -27,6 +28,7 @@ import {
 	useDisclosure,
 	useToast
 } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { FiCode, FiFileText, FiPlus, FiUsers } from 'react-icons/fi';
@@ -43,6 +45,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	const [isMembersLoading, setIsMembersLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const toast = useToast();
+	const [auth] = useAtom(authAtom);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -56,7 +59,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 				setClassroom(classroomData);
 				setClassActivities(activitiesData);
 				setProfessor(professorData);
-			} catch (error) {
+			} catch {
 				toast({
 					title: 'Error',
 					description: 'No se pudo cargar la información de la clase',
@@ -84,7 +87,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 			try {
 				const members = await api.classroom.getMembers(id);
 				setClassMembers(members);
-			} catch (error) {
+			} catch {
 				toast({
 					title: 'Error',
 					description: 'No se pudo cargar la lista de estudiantes',
@@ -152,12 +155,16 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 							<Flex gap={6} color='gray.400'>
 								<Flex align='center' gap={2}>
 									<Icon as={FiUsers} />
-									<Text>{classroom.memberCount} estudiantes</Text>
+									<Text>
+										{classroom.memberCount === 1 ? 'Sin ' : classroom.memberCount - 1} estudiantes
+									</Text>
 								</Flex>
-								<Flex align='center' gap={2}>
-									<Icon as={FiCode} />
-									<Text>Código: {classroom.code}</Text>
-								</Flex>
+								{classroom.owner === auth.user?.id && (
+									<Flex align='center' gap={2}>
+										<Icon as={FiCode} />
+										<Text>Código: {classroom.code}</Text>
+									</Flex>
+								)}
 							</Flex>
 						</Stack>
 
@@ -201,7 +208,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 								>
 									<Flex align='center' gap={2}>
 										<FiUsers />
-										<Text>Estudiantes</Text>
+										<Text>Miembros</Text>
 									</Flex>
 								</Tab>
 							</TabList>
@@ -263,6 +270,41 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 								<TabPanel p={0} className='animate-fade-in'>
 									<VStack spacing={8} align='stretch'>
 										<Box>
+											{professor && (
+												<>
+													<Heading size='lg' mb={6}>
+														Profesor
+													</Heading>
+													<Grid
+														templateColumns={{
+															base: '1fr',
+															sm: 'repeat(2, 1fr)',
+															md: 'repeat(3, 1fr)'
+														}}
+														gap={4}
+													>
+														<Flex
+															key={professor.id}
+															p={4}
+															gap={4}
+															align='center'
+															bg='brand.dark.900'
+															borderRadius='xl'
+															border='1px solid'
+															borderColor='brand.dark.800'
+															mb='20px'
+														>
+															<Avatar size='md' name={professor.username} />
+															<Box>
+																<Text fontWeight='bold'>{professor.username}</Text>
+																<Text fontSize='sm' color='brand.400'>
+																	Profesor
+																</Text>
+															</Box>
+														</Flex>
+													</Grid>
+												</>
+											)}
 											<Heading size='lg' mb={6}>
 												Estudiantes
 											</Heading>
@@ -279,32 +321,28 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 													}}
 													gap={4}
 												>
-													{classMembers.map((member) => (
-														<Flex
-															key={member.id}
-															p={4}
-															gap={4}
-															align='center'
-															bg='brand.dark.900'
-															borderRadius='xl'
-															border='1px solid'
-															borderColor='brand.dark.800'
-														>
-															<Avatar size='md' name={member.username} />
-															<Box>
-																<Text fontWeight='bold'>{member.username}</Text>
-																{member.id === classroom.owner ? (
-																	<Text fontSize='sm' color='brand.primary.400'>
-																		Profesor
-																	</Text>
-																) : (
+													{classMembers
+														.filter((m) => m.id !== classroom.owner)
+														.map((member) => (
+															<Flex
+																key={member.id}
+																p={4}
+																gap={4}
+																align='center'
+																bg='brand.dark.900'
+																borderRadius='xl'
+																border='1px solid'
+																borderColor='brand.dark.800'
+															>
+																<Avatar size='md' name={member.username} />
+																<Box>
+																	<Text fontWeight='bold'>{member.username}</Text>
 																	<Text fontSize='sm' color='gray.400'>
 																		Estudiante
 																	</Text>
-																)}
-															</Box>
-														</Flex>
-													))}
+																</Box>
+															</Flex>
+														))}
 												</Grid>
 											)}
 										</Box>
