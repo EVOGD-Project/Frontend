@@ -1,6 +1,7 @@
 import { API_URL } from '@/constants/constants';
 import type { IActivity } from '@/types/IActivity';
 import type { IClassroom } from '@/types/IClassroomCard';
+import type { IUser } from '@/types/IUser';
 
 const getAuthHeaders = (): Record<string, string> => {
 	const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -30,6 +31,18 @@ export const api = {
 			if (!res.ok) throw new Error('Failed to fetch classroom');
 			return res.json();
 		},
+
+		getMembers: async (id: string): Promise<IUser[]> => {
+			const res = await fetch(`${API_URL}/classrooms/${encodeURIComponent(id)}/members`, {
+				headers: {
+					...getAuthHeaders()
+				}
+			});
+
+			if (!res.ok) throw new Error('Failed to fetch classroom');
+			return res.json();
+		},
+
 
 		create: async (data: {
 			name: string;
