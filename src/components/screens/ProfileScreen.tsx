@@ -1,5 +1,8 @@
 'use client';
 
+import { api } from '@/api/api';
+import { authAtom } from '@/store/auth';
+import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Avatar,
 	Box,
@@ -9,27 +12,45 @@ import {
 	Grid,
 	Heading,
 	SimpleGrid,
+	Spinner,
 	Text,
 	VStack,
 	useDisclosure
 } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
-import { classrooms } from '../../mocks/classrooms';
 import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
 
-const mockUser = {
-	name: 'Ángel',
-	email: 'contacto@tnfangel.com',
-	avatar: 'https://avatars.githubusercontent.com/u/57068341?v=4'
-};
-
 export default function ProfileScreen() {
+	const [auth] = useAtom(authAtom);
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
+	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const myClasses = classrooms.slice(0, 4);
+	const { user } = auth;
 
-	return (
+	useEffect(() => {
+		const fetchClassrooms = async () => {
+			try {
+				const data = await api.classroom.getAll();
+				setClassrooms(data);
+			} catch (error) {
+				console.error('Failed to fetch classrooms:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		if (user) {
+			fetchClassrooms();
+		}
+	}, [user]);
+
+	if (typeof location !== 'undefined' && !user && !auth.isLoading) location.href = '/';
+
+	return user ? (
 		<Box as='main' className='animate-fade-in'>
 			<Box bg='brand.dark.900' py={12}>
 				<Container maxW='container.xl'>
@@ -39,10 +60,10 @@ export default function ProfileScreen() {
 						alignItems='center'
 					>
 						<Flex align='center' gap={6}>
-							<Avatar size='xl' name={mockUser.name} src={mockUser.avatar} />
+							<Avatar size='xl' name={user.username} src={user.avatar ?? ''} />
 							<VStack align='start' spacing={1}>
-								<Heading size='lg'>{mockUser.name}</Heading>
-								<Text color='gray.400'>{mockUser.email}</Text>
+								<Heading size='lg'>{user.username}</Heading>
+								<Text color='gray.400'>{user.email}</Text>
 							</VStack>
 						</Flex>
 
@@ -64,9 +85,13 @@ export default function ProfileScreen() {
 						<Heading size='lg' mb={6}>
 							Clases Destacadas
 						</Heading>
-						{myClasses.length > 0 ? (
+						{isLoading ? (
+							<Flex h='200px' align='center' justify='center'>
+								<Spinner size='lg' />
+							</Flex>
+						) : classrooms.length > 0 ? (
 							<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
-								{myClasses.map((classroom) => (
+								{classrooms.map((classroom) => (
 									<ClassroomCard key={classroom.id} item={classroom} />
 								))}
 							</SimpleGrid>
@@ -94,7 +119,9 @@ export default function ProfileScreen() {
 				</VStack>
 			</Container>
 
-			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} />
+			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} onClassroomCreated={setClassrooms} />
 		</Box>
+	) : (
+		<></>
 	);
 }

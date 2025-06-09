@@ -1,5 +1,7 @@
 'use client';
 
+import { api } from '@/api/api';
+import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Button,
 	FormControl,
@@ -12,25 +14,37 @@ import {
 	ModalFooter,
 	ModalHeader,
 	ModalOverlay,
+	Select,
 	Textarea,
 	VStack,
 	useToast
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface CreateClassModalProps {
 	isOpen: boolean;
 	onClose: () => void;
+	onClassroomCreated?: (classrooms: IClassroom[]) => void;
 }
 
-export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateClassModalProps>) {
+export default function CreateClassModal({ isOpen, onClose, onClassroomCreated }: Readonly<CreateClassModalProps>) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		name: '',
 		description: '',
-		image: ''
+		thumbnailId: 1
 	});
 	const toast = useToast();
+
+	useEffect(() => {
+		if (isOpen) {
+			setFormData({
+				name: '',
+				description: '',
+				thumbnailId: 1
+			});
+		}
+	}, [isOpen]);
 
 	const handleSubmit = async () => {
 		if (!formData.name.trim() || !formData.description.trim()) {
@@ -47,7 +61,17 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 
 		setIsLoading(true);
 		try {
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			const { id } = await api.classroom.create(formData);
+
+			const newClassroom: IClassroom = {
+				id,
+				...formData,
+				code: id.slice(0, 6).toUpperCase(),
+				owner: 'Ángel'
+			};
+
+			onClassroomCreated?.([newClassroom]);
+
 			toast({
 				title: 'Clase creada',
 				description: 'La clase se ha creado exitosamente',
@@ -61,8 +85,8 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 			toast({
 				title: 'Error',
 				description: 'Ocurrió un error al crear la clase',
-				position: 'top-right',
 				status: 'error',
+				position: 'top-right',
 				duration: 3000,
 				isClosable: true
 			});
@@ -72,7 +96,7 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} size='xl'>
+		<Modal isOpen={isOpen} onClose={onClose}>
 			<ModalOverlay backdropFilter='blur(4px)' />
 			<ModalContent bg='brand.dark.900' border='1px solid' borderColor='brand.dark.800'>
 				<ModalHeader>Crear Nueva Clase</ModalHeader>
@@ -80,9 +104,9 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 				<ModalBody>
 					<VStack spacing={4}>
 						<FormControl isRequired>
-							<FormLabel>Nombre de la Clase</FormLabel>
+							<FormLabel>Nombre</FormLabel>
 							<Input
-								placeholder='Ej: Matemáticas Avanzadas'
+								placeholder='Ej: Programación Web'
 								value={formData.name}
 								onChange={(e) => setFormData({ ...formData, name: e.target.value })}
 								bg='brand.dark.800'
@@ -112,6 +136,28 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 								}}
 								rows={4}
 							/>
+						</FormControl>
+
+						<FormControl>
+							<FormLabel>Imagen de portada</FormLabel>
+							<Select
+								value={formData.thumbnailId}
+								onChange={(e) => setFormData({ ...formData, thumbnailId: Number(e.target.value) })}
+								bg='brand.dark.800'
+								border='1px solid'
+								borderColor='brand.dark.700'
+								_hover={{ borderColor: 'brand.primary.500' }}
+								_focus={{
+									borderColor: 'brand.primary.500',
+									boxShadow: '0 0 0 1px var(--chakra-colors-brand-primary-500)'
+								}}
+							>
+								{Array.from({ length: 9 }, (_, i) => (
+									<option key={i + 1} value={i + 1}>
+										Imagen {i + 1}
+									</option>
+								))}
+							</Select>
 						</FormControl>
 					</VStack>
 				</ModalBody>

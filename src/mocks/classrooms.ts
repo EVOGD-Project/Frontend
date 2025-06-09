@@ -1,6 +1,6 @@
-import type { IClassroomCard } from '@/types/IClassroomCard';
+import type { IClassroom } from '@/types/IClassroomCard';
 
-export const classrooms: IClassroomCard[] = [
+export const classrooms: IClassroom[] = [
 	{
 		id: '1',
 		name: 'Clase de prueba',

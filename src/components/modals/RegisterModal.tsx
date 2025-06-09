@@ -1,5 +1,6 @@
 'use client';
 
+import { API_URL } from '@/constants/constants';
 import { authAtom, loadUser } from '@/store/auth';
 import {
 	Button,
@@ -61,7 +62,7 @@ export default function RegisterModal({ isOpen, onClose, onLoginClick }: Readonl
 
 		setIsLoading(true);
 		try {
-			const res = await fetch('https://evogd-api.tnfangel.com/auth/register', {
+			const res = await fetch(`${API_URL}/auth/register`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

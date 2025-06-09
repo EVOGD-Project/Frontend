@@ -1,8 +1,10 @@
 'use client';
 
+import { api } from '@/api/api';
+import type { IClassroom } from '@/types/IClassroomCard';
 import { Box, Button, Container, Flex, Grid, Heading, SimpleGrid, Text, useDisclosure } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
-import { classrooms } from '../../mocks/classrooms';
 import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
 import JoinClassModal from '../modals/JoinClassModal';
@@ -10,6 +12,23 @@ import JoinClassModal from '../modals/JoinClassModal';
 export default function ClassesScreen() {
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
 	const { isOpen: isJoinOpen, onOpen: onJoinOpen, onClose: onJoinClose } = useDisclosure();
+	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchClassrooms = async () => {
+			try {
+				const data = await api.classroom.getAll();
+				setClassrooms(data);
+			} catch (error) {
+				console.error('Error al obtener las clases:', error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchClassrooms();
+	}, []);
 
 	return (
 		<Box as='main' className='animate-fade-in'>
@@ -40,14 +59,39 @@ export default function ClassesScreen() {
 			</Box>
 
 			<Container maxW='container.xl' py={8}>
-				<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
-					{classrooms.map((classroom) => (
-						<ClassroomCard key={classroom.id} item={classroom} />
-					))}
-				</SimpleGrid>
+				{isLoading ? (
+					<Flex h='200px' align='center' justify='center'>
+						<Text>Cargando...</Text>
+					</Flex>
+				) : classrooms.length > 0 ? (
+					<SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing={6}>
+						{classrooms.map((classroom) => (
+							<ClassroomCard key={classroom.id} item={classroom} />
+						))}
+					</SimpleGrid>
+				) : (
+					<Flex
+						direction='column'
+						align='center'
+						justify='center'
+						py={16}
+						gap={4}
+						bg='brand.dark.900'
+						borderRadius='xl'
+						border='1px dashed'
+						borderColor='brand.dark.700'
+					>
+						<Text fontSize='lg' color='gray.400'>
+							Aún no tienes clases
+						</Text>
+						<Button leftIcon={<FiPlus />} variant='outline' onClick={onCreateOpen}>
+							Crear tu primera clase
+						</Button>
+					</Flex>
+				)}
 			</Container>
-			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} />
-			<JoinClassModal isOpen={isJoinOpen} onClose={onJoinClose} />
+			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} onClassroomCreated={setClassrooms} />
+			<JoinClassModal isOpen={isJoinOpen} onClose={onJoinClose} onClassroomJoined={setClassrooms} />
 		</Box>
 	);
 }

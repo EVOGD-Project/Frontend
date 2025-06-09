@@ -1,8 +1,9 @@
 'use client';
 
-import { activities } from '@/mocks/activities';
-import { classrooms } from '@/mocks/classrooms';
+import { api } from '@/api/api';
+import { CDN_URL } from '@/constants/constants';
 import type { IActivity } from '@/types/IActivity';
+import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Avatar,
 	Box,
@@ -13,6 +14,7 @@ import {
 	Heading,
 	Icon,
 	Image,
+	Spinner,
 	Stack,
 	Tab,
 	TabList,
@@ -21,34 +23,71 @@ import {
 	Tabs,
 	Text,
 	VStack,
-	useDisclosure
+	useDisclosure,
+	useToast
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiCode, FiFileText, FiPlus, FiUsers } from 'react-icons/fi';
 import ActivityCard from '../general/ActivityCard';
 import CreateActivityModal from '../modals/CreateActivityModal';
 
 export default function ClassScreen({ id }: Readonly<{ id: string }>) {
-	const classroom = classrooms.find((c) => c.id === id);
+	const [classroom, setClassroom] = useState<IClassroom | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 	const router = useRouter();
-	const [classActivities, setClassActivities] = useState<IActivity[]>(
-		activities.filter((activity) => activity.classroomId === id)
-	);
+	const [classActivities, setClassActivities] = useState<IActivity[]>([]);
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const toast = useToast();
 
-	if (!classroom && typeof location !== 'undefined') location.href = '/';
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const [classroomData, activitiesData] = await Promise.all([
+					api.classroom.getById(id),
+					api.activities.getByClassroom(id)
+				]);
+
+				setClassroom(classroomData);
+				setClassActivities(activitiesData);
+			} catch (error) {
+				toast({
+					title: 'Error',
+					description: 'No se pudo cargar la información de la clase',
+					status: 'error',
+					position: 'top-right',
+					duration: 3000,
+					isClosable: true
+				});
+				if (typeof location !== 'undefined') location.href = '/';
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchData();
+	}, [id, toast]);
 
 	const handleActivityCreated = (activity: IActivity) => {
 		setClassActivities((prev) => [...prev, activity]);
 	};
 
-	return classroom ? (
+	if (isLoading) {
+		return (
+			<Flex h='100%' align='center' justify='center'>
+				<Spinner size='lg' />
+			</Flex>
+		);
+	}
+
+	if (!classroom) return null;
+
+	return (
 		<Box as='main' className='animate-fade-in'>
 			<Box bg='brand.dark.900' py={12} position='relative' overflow='hidden'>
 				<Box position='absolute' top={0} left={0} right={0} height='200px' opacity={0.3} filter='blur(8px)'>
 					<Image
-						src={`https://evogd-cdn.tnfangel.com/thumbnails/thumbnail-${classroom.thumbnailId}.jpg`}
+						src={`${CDN_URL}/thumbnails/thumbnail-${classroom.thumbnailId}.jpg`}
 						alt={classroom.name}
 						width='100%'
 						height='100%'
@@ -271,5 +310,5 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 				onActivityCreated={handleActivityCreated}
 			/>
 		</Box>
-	) : null;
+	);
 }

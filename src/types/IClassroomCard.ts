@@ -1,4 +1,4 @@
-export interface IClassroomCard {
+export interface IClassroom {
 	id: string;
 	name: string;
 	description: string;
