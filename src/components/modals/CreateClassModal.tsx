@@ -1,6 +1,7 @@
 'use client';
 
 import { api } from '@/api/api';
+import { authAtom } from '@/store/auth';
 import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Button,
@@ -19,6 +20,7 @@ import {
 	VStack,
 	useToast
 } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 
 interface CreateClassModalProps {
@@ -34,6 +36,8 @@ export default function CreateClassModal({ isOpen, onClose, onClassroomCreated }
 		description: '',
 		thumbnailId: 1
 	});
+	const [auth] = useAtom(authAtom);
+
 	const toast = useToast();
 
 	useEffect(() => {
@@ -67,7 +71,8 @@ export default function CreateClassModal({ isOpen, onClose, onClassroomCreated }
 				id,
 				...formData,
 				code: id.slice(0, 6).toUpperCase(),
-				owner: 'Ángel'
+				owner: auth.user?.id ?? '',
+				memberCount: 1
 			};
 
 			onClassroomCreated?.([newClassroom]);
