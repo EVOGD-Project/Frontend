@@ -39,10 +39,20 @@ export const api = {
 				}
 			});
 
-			if (!res.ok) throw new Error('Failed to fetch classroom');
+			if (!res.ok) throw new Error('Failed to fetch classroom members');
 			return res.json();
 		},
 
+		getProfessor: async (id: string): Promise<IUser> => {
+			const res = await fetch(`${API_URL}/classrooms/${encodeURIComponent(id)}/professor`, {
+				headers: {
+					...getAuthHeaders()
+				}
+			});
+
+			if (!res.ok) throw new Error('Failed to fetch classroom professor');
+			return res.json();
+		},
 
 		create: async (data: {
 			name: string;

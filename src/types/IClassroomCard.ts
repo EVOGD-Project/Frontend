@@ -5,4 +5,5 @@ export interface IClassroom {
 	thumbnailId: number;
 	code: string;
 	owner: string;
+	memberCount: number;
 }

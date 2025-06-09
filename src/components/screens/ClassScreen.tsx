@@ -4,6 +4,7 @@ import { api } from '@/api/api';
 import { CDN_URL } from '@/constants/constants';
 import type { IActivity } from '@/types/IActivity';
 import type { IClassroom } from '@/types/IClassroomCard';
+import type { IUser } from '@/types/IUser';
 import {
 	Avatar,
 	Box,
@@ -31,7 +32,6 @@ import { useEffect, useState } from 'react';
 import { FiCode, FiFileText, FiPlus, FiUsers } from 'react-icons/fi';
 import ActivityCard from '../general/ActivityCard';
 import CreateActivityModal from '../modals/CreateActivityModal';
-import type { IUser } from '@/types/IUser';
 
 export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	const [classroom, setClassroom] = useState<IClassroom | null>(null);
@@ -39,6 +39,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	const router = useRouter();
 	const [classActivities, setClassActivities] = useState<IActivity[]>([]);
 	const [classMembers, setClassMembers] = useState<IUser[]>([]);
+	const [professor, setProfessor] = useState<IUser | null>(null);
 	const [isMembersLoading, setIsMembersLoading] = useState(false);
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const toast = useToast();
@@ -46,13 +47,15 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const [classroomData, activitiesData] = await Promise.all([
+				const [classroomData, activitiesData, professorData] = await Promise.all([
 					api.classroom.getById(id),
-					api.activities.getByClassroom(id)
+					api.activities.getByClassroom(id),
+					api.classroom.getProfessor(id)
 				]);
 
 				setClassroom(classroomData);
 				setClassActivities(activitiesData);
+				setProfessor(professorData);
 			} catch (error) {
 				toast({
 					title: 'Error',
@@ -76,7 +79,6 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 	};
 
 	const handleTabChange = async (index: number) => {
-		// Index 1 is the "Estudiantes" tab
 		if (index === 1 && classMembers.length === 0) {
 			setIsMembersLoading(true);
 			try {
@@ -150,7 +152,7 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 							<Flex gap={6} color='gray.400'>
 								<Flex align='center' gap={2}>
 									<Icon as={FiUsers} />
-									<Text>{classMembers.length || '...'} estudiantes</Text>
+									<Text>{classroom.memberCount} estudiantes</Text>
 								</Flex>
 								<Flex align='center' gap={2}>
 									<Icon as={FiCode} />
@@ -160,12 +162,8 @@ export default function ClassScreen({ id }: Readonly<{ id: string }>) {
 						</Stack>
 
 						<VStack spacing={2} align='center'>
-							<Avatar
-								size='xl'
-								name={classroom.owner}
-								src='https://avatars.githubusercontent.com/u/57068341?v=4'
-							/>
-							<Text color='gray.300'>Ángel</Text>
+							<Avatar size='xl' name={professor?.username} src={professor?.avatar ?? ''} />
+							<Text color='gray.300'>{professor?.username}</Text>
 						</VStack>
 					</Grid>
 				</Container>

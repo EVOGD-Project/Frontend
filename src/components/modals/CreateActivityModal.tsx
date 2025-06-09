@@ -1,6 +1,7 @@
 'use client';
 
 import { api } from '@/api/api';
+import { authAtom } from '@/store/auth';
 import type { IActivity } from '@/types/IActivity';
 import {
 	Button,
@@ -21,6 +22,7 @@ import {
 	VStack,
 	useToast
 } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import { useState } from 'react';
 import { FiPlus, FiTrash } from 'react-icons/fi';
 
@@ -37,6 +39,7 @@ export default function CreateActivityModal({
 	classroomId,
 	onActivityCreated
 }: Readonly<CreateActivityModalProps>) {
+	const [auth] = useAtom(authAtom);
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		title: '',
@@ -71,7 +74,7 @@ export default function CreateActivityModal({
 				id,
 				...formData,
 				classroomId,
-				owner: 'Ángel',
+				owner: auth.user?.id ?? '',
 				createdAt: new Date().toISOString()
 			};
 
