@@ -1,5 +1,5 @@
-import ClasroomsScreen from '@/components/screens/ClassroomsScreen';
+import ClassroomsScreen from '@/components/screens/ClassroomsScreen';
 
 export default function ClassesPage() {
-	return <ClasroomsScreen />;
+	return <ClassroomsScreen />;
 }

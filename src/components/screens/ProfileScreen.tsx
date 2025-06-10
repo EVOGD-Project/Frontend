@@ -1,7 +1,9 @@
 'use client';
 
 import { api } from '@/api/api';
+import { CDN_URL } from '@/constants/constants';
 import { authAtom } from '@/store/auth';
+import { classroomsAtom } from '@/store/classrooms';
 import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Avatar,
@@ -18,38 +20,18 @@ import {
 	useDisclosure
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { useEffect, useState } from 'react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
 import EditAccountModal from '../modals/EditAccountModal';
-import { CDN_URL } from '@/constants/constants';
 
 export default function ProfileScreen() {
 	const [auth] = useAtom(authAtom);
+	const [classrooms] = useAtom(classroomsAtom);
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
 	const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
-	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
 
 	const { user } = auth;
-
-	useEffect(() => {
-		const fetchClassrooms = async () => {
-			try {
-				const data = await api.classroom.getAll();
-				setClassrooms(data);
-			} catch (error) {
-				console.error('Failed to fetch classrooms:', error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		if (user) {
-			fetchClassrooms();
-		}
-	}, [user]);
 
 	if (typeof location !== 'undefined' && !user && !auth.isLoading) location.href = '/';
 
@@ -92,7 +74,7 @@ export default function ProfileScreen() {
 						<Heading size='lg' mb={6}>
 							Clases Destacadas
 						</Heading>
-						{isLoading ? (
+						{classrooms === null ? (
 							<Flex h='200px' align='center' justify='center'>
 								<Spinner size='lg' />
 							</Flex>
@@ -126,7 +108,7 @@ export default function ProfileScreen() {
 				</VStack>
 			</Container>
 
-			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} onClassroomCreated={setClassrooms} />
+			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} />
 			<EditAccountModal isOpen={isEditOpen} onClose={onEditClose} />
 		</Box>
 	) : (

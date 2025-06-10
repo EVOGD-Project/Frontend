@@ -1,6 +1,7 @@
 'use client';
 
 import { api } from '@/api/api';
+import { classroomsAtom } from '@/store/classrooms';
 import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Button,
@@ -17,17 +18,19 @@ import {
 	VStack,
 	useToast
 } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 
 interface JoinClassModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	onClassroomJoined?: (classrooms: IClassroom[]) => void;
 }
 
-export default function JoinClassModal({ isOpen, onClose, onClassroomJoined }: Readonly<JoinClassModalProps>) {
+export default function JoinClassModal({ isOpen, onClose }: Readonly<JoinClassModalProps>) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [code, setCode] = useState('');
+	const [, setClassrooms] = useAtom(classroomsAtom);
+
 	const toast = useToast();
 
 	useEffect(() => {
@@ -52,8 +55,13 @@ export default function JoinClassModal({ isOpen, onClose, onClassroomJoined }: R
 		setIsLoading(true);
 		try {
 			await api.classroom.join(code);
-			const updatedClassrooms = await api.classroom.getAll();
-			onClassroomJoined?.(updatedClassrooms);
+
+			try {
+				const data = await api.classroom.getAll();
+				setClassrooms(data);
+			} catch (error) {
+				console.error('Failed to fetch classrooms:', error);
+			}
 
 			toast({
 				title: 'Éxito',
