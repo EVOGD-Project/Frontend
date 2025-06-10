@@ -35,7 +35,7 @@ import { FiCode, FiFileText, FiPlus, FiUsers } from 'react-icons/fi';
 import ActivityCard from '../general/ActivityCard';
 import CreateActivityModal from '../modals/CreateActivityModal';
 
-export default function ClassScreen({ id }: Readonly<{ id: string }>) {
+export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 	const [classroom, setClassroom] = useState<IClassroom | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const router = useRouter();

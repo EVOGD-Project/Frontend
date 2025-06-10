@@ -20,7 +20,7 @@ import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
 import JoinClassModal from '../modals/JoinClassModal';
 
-export default function ClassesScreen() {
+export default function ClasroomsScreen() {
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
 	const { isOpen: isJoinOpen, onOpen: onJoinOpen, onClose: onJoinClose } = useDisclosure();
 	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
