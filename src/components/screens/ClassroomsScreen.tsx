@@ -1,7 +1,6 @@
 'use client';
 
-import { api } from '@/api/api';
-import type { IClassroom } from '@/types/IClassroomCard';
+import { classroomsAtom } from '@/store/classrooms';
 import {
 	Box,
 	Button,
@@ -14,32 +13,17 @@ import {
 	Text,
 	useDisclosure
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
+import {} from 'react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
 import JoinClassModal from '../modals/JoinClassModal';
 
-export default function ClasroomsScreen() {
+export default function ClassroomsScreen() {
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
 	const { isOpen: isJoinOpen, onOpen: onJoinOpen, onClose: onJoinClose } = useDisclosure();
-	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		const fetchClassrooms = async () => {
-			try {
-				const data = await api.classroom.getAll();
-				setClassrooms(data);
-			} catch (error) {
-				console.error('Error al obtener las clases:', error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchClassrooms();
-	}, []);
+	const [classrooms] = useAtom(classroomsAtom);
 
 	return (
 		<Box as='main' className='animate-fade-in'>
@@ -70,7 +54,7 @@ export default function ClasroomsScreen() {
 			</Box>
 
 			<Container maxW='container.xl' py={8}>
-				{isLoading ? (
+				{classrooms === null ? (
 					<Flex h='200px' align='center' justify='center'>
 						<Spinner size='xl' borderWidth='4px' />
 					</Flex>
@@ -101,8 +85,8 @@ export default function ClasroomsScreen() {
 					</Flex>
 				)}
 			</Container>
-			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} onClassroomCreated={setClassrooms} />
-			<JoinClassModal isOpen={isJoinOpen} onClose={onJoinClose} onClassroomJoined={setClassrooms} />
+			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} />
+			<JoinClassModal isOpen={isJoinOpen} onClose={onJoinClose} />
 		</Box>
 	);
 }

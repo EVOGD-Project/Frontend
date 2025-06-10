@@ -2,6 +2,7 @@
 
 import { api } from '@/api/api';
 import { authAtom } from '@/store/auth';
+import { classroomsAtom } from '@/store/classrooms';
 import type { IClassroom } from '@/types/IClassroomCard';
 import {
 	Button,
@@ -26,17 +27,16 @@ import { useEffect, useState } from 'react';
 interface CreateClassModalProps {
 	isOpen: boolean;
 	onClose: () => void;
-	onClassroomCreated?: (classrooms: IClassroom[]) => void;
 }
 
-export default function CreateClassModal({ isOpen, onClose, onClassroomCreated }: Readonly<CreateClassModalProps>) {
+export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateClassModalProps>) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		name: '',
 		description: '',
 		thumbnailId: 1
 	});
-	const [auth] = useAtom(authAtom);
+	const [, setClassrooms] = useAtom(classroomsAtom);
 
 	const toast = useToast();
 
@@ -65,18 +65,14 @@ export default function CreateClassModal({ isOpen, onClose, onClassroomCreated }
 
 		setIsLoading(true);
 		try {
-			const { id } = await api.classroom.create(formData);
+			await api.classroom.create(formData);
 
-			const newClassroom: IClassroom = {
-				id,
-				...formData,
-				code: id.slice(0, 6).toUpperCase(),
-				owner: auth.user?.id ?? '',
-				memberCount: 1
-			};
-
-			onClassroomCreated?.([newClassroom]);
-
+			try {
+				const data = await api.classroom.getAll();
+				setClassrooms(data);
+			} catch (error) {
+				console.error('Failed to fetch classrooms:', error);
+			}
 			toast({
 				title: 'Clase creada',
 				description: 'La clase se ha creado exitosamente',

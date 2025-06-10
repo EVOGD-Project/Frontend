@@ -321,7 +321,7 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 															/>
 															<Box>
 																<Text fontWeight='bold'>{professor.username}</Text>
-																<Text fontSize='sm' color='brand.400'>
+																<Text fontSize='sm' color='brand.primary.300'>
 																	Profesor
 																</Text>
 															</Box>
