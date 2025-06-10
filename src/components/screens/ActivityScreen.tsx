@@ -194,7 +194,7 @@ export default function ActivityScreen({
 								>
 									{activityTypeInfo[activity.type].label}
 								</Badge>
-								<Text color='gray.400'>{classroom.name}</Text>
+								<Link color='gray.400'>{classroom.name}</Link>
 							</Flex>
 							<Heading
 								as='h1'

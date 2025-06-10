@@ -1,32 +1,15 @@
 'use client';
 
-import { api } from '@/api/api';
-import type { IClassroom } from '@/types/IClassroomCard';
+import { classroomsAtom } from '@/store/classrooms';
 import { Box, Button, Container, Flex, Heading, SimpleGrid, Spinner, Text } from '@chakra-ui/react';
+import { useAtom } from 'jotai';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { FiBookOpen } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
 
 export default function IndexScreen() {
 	const router = useRouter();
-	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		const fetchClassrooms = async () => {
-			try {
-				const data = await api.classroom.getAll();
-				setClassrooms(data);
-			} catch (error) {
-				console.error('Failed to fetch classrooms:', error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchClassrooms();
-	}, []);
+	const [classrooms] = useAtom(classroomsAtom);
 
 	return (
 		<Box as='main' className='animate-fade-in'>
@@ -83,7 +66,7 @@ export default function IndexScreen() {
 					<Heading size='lg' mb={6}>
 						Clases Destacadas
 					</Heading>
-					{isLoading ? (
+					{classrooms === null ? (
 						<Flex h='200px' align='center' justify='center'>
 							<Spinner size='xl' borderWidth='4px' />
 						</Flex>
