@@ -169,7 +169,7 @@ export default function CreateActivityModal({
 
 						<FormControl isRequired>
 							<FormLabel>Descripción</FormLabel>
-							<Textarea
+							<Input
 								placeholder='Describe la actividad...'
 								value={formData.description}
 								onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -181,7 +181,6 @@ export default function CreateActivityModal({
 									borderColor: 'brand.primary.500',
 									boxShadow: '0 0 0 1px var(--chakra-colors-brand-primary-500)'
 								}}
-								rows={4}
 							/>
 						</FormControl>
 

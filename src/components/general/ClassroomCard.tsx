@@ -2,7 +2,7 @@
 
 import { CDN_URL } from '@/constants/constants';
 import type { IClassroom } from '@/types/IClassroomCard';
-import { Box, Button, Card, CardBody, Flex, Heading, Image, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, Flex, Heading, Image, Spacer, Stack, Text } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { FiUsers } from 'react-icons/fi';
 
@@ -33,18 +33,19 @@ export default function ClassroomCard({ item }: Readonly<{ item: IClassroom }>) 
 			</Box>
 
 			<CardBody>
-				<Stack spacing={4}>
+				<Stack spacing={4} h='100%'>
 					<Heading
 						size='md'
-						noOfLines={2}
+						noOfLines={1}
 						transition='color 0.3s ease'
 						_groupHover={{ color: 'brand.primary.400' }}
 					>
 						{item.name}
 					</Heading>
-					<Text fontSize='sm' noOfLines={2}>
+					<Text fontSize='sm' noOfLines={1}>
 						{item.description || 'Sin descripción.'}
 					</Text>
+					<Spacer />
 					<Flex justify='space-between' align='center'>
 						<Flex align='center' gap={2}>
 							<FiUsers />

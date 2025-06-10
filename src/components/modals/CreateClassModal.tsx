@@ -123,7 +123,7 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 
 						<FormControl isRequired>
 							<FormLabel>Descripción</FormLabel>
-							<Textarea
+							<Input
 								placeholder='Describe tu clase...'
 								value={formData.description}
 								onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -135,7 +135,6 @@ export default function CreateClassModal({ isOpen, onClose }: Readonly<CreateCla
 									borderColor: 'brand.primary.500',
 									boxShadow: '0 0 0 1px var(--chakra-colors-brand-primary-500)'
 								}}
-								rows={4}
 							/>
 						</FormControl>
 
