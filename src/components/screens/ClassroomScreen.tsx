@@ -10,6 +10,7 @@ import {
 	Avatar,
 	Box,
 	Button,
+	Code,
 	Container,
 	Flex,
 	Grid,
@@ -90,7 +91,7 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 			} catch {
 				toast({
 					title: 'Error',
-					description: 'No se pudo cargar la lista de estudiantes',
+					description: 'No se pudo cargar la lista de miembros',
 					status: 'error',
 					position: 'top-right',
 					duration: 3000,
@@ -111,6 +112,8 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 	}
 
 	if (!classroom) return null;
+
+	const students = classMembers.filter((m) => m.id !== classroom.owner);
 
 	return (
 		<Box as='main' className='animate-fade-in'>
@@ -162,15 +165,28 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 								{classroom.owner === auth.user?.id && (
 									<Flex align='center' gap={2}>
 										<Icon as={FiCode} />
-										<Text>Código: {classroom.code}</Text>
+										<Text>
+											Código: <Code bg='transparent'>{classroom.code}</Code>
+										</Text>
 									</Flex>
 								)}
 							</Flex>
 						</Stack>
 
 						<VStack spacing={2} align='center'>
-							<Avatar size='xl' name={professor?.username} src={professor?.avatar ?? ''} />
-							<Text color='gray.300'>{professor?.username}</Text>
+							<Avatar
+								size='xl'
+								name={professor?.username}
+								src={
+									professor?.avatar
+										? `${CDN_URL}/avatars/${professor.id}/${professor.avatar}.png`
+										: ''
+								}
+							/>
+							<Text color='gray.200' fontWeight='bold'>
+								{professor?.username}
+							</Text>
+							<Text color='gray.400'>Profesor</Text>
 						</VStack>
 					</Grid>
 				</Container>
@@ -294,7 +310,15 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 															borderColor='brand.dark.800'
 															mb='20px'
 														>
-															<Avatar size='md' name={professor.username} />
+															<Avatar
+																size='md'
+																name={professor.username}
+																src={
+																	professor?.avatar
+																		? `${CDN_URL}/avatars/${professor.id}/${professor.avatar}.png`
+																		: ''
+																}
+															/>
 															<Box>
 																<Text fontWeight='bold'>{professor.username}</Text>
 																<Text fontSize='sm' color='brand.400'>
@@ -321,9 +345,8 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 													}}
 													gap={4}
 												>
-													{classMembers
-														.filter((m) => m.id !== classroom.owner)
-														.map((member) => (
+													{students.length > 0 ? (
+														students.map((member) => (
 															<Flex
 																key={member.id}
 																p={4}
@@ -334,7 +357,15 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 																border='1px solid'
 																borderColor='brand.dark.800'
 															>
-																<Avatar size='md' name={member.username} />
+																<Avatar
+																	size='md'
+																	name={member.username}
+																	src={
+																		member?.avatar
+																			? `${CDN_URL}/avatars/${member.id}/${member.avatar}.png`
+																			: ''
+																	}
+																/>
 																<Box>
 																	<Text fontWeight='bold'>{member.username}</Text>
 																	<Text fontSize='sm' color='gray.400'>
@@ -342,7 +373,10 @@ export default function ClassroomScreen({ id }: Readonly<{ id: string }>) {
 																	</Text>
 																</Box>
 															</Flex>
-														))}
+														))
+													) : (
+														<Text>Sin estudiantes</Text>
+													)}
 												</Grid>
 											)}
 										</Box>

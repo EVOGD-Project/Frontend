@@ -9,6 +9,20 @@ const getAuthHeaders = (): Record<string, string> => {
 };
 
 export const api = {
+	user: {
+		avatar: async (): Promise<{ url: string }> => {
+			const res = await fetch(`${API_URL}/user/avatar`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					...getAuthHeaders()
+				}
+			});
+
+			if (!res.ok) throw new Error('Failed to change avatar');
+			return res.json();
+		}
+	},
 	classroom: {
 		getAll: async (): Promise<IClassroom[]> => {
 			const res = await fetch(`${API_URL}/classrooms`, {

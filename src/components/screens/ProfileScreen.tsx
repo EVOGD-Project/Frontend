@@ -22,10 +22,13 @@ import { useEffect, useState } from 'react';
 import { FiPlus, FiUsers } from 'react-icons/fi';
 import ClassroomCard from '../general/ClassroomCard';
 import CreateClassModal from '../modals/CreateClassModal';
+import EditAccountModal from '../modals/EditAccountModal';
+import { CDN_URL } from '@/constants/constants';
 
 export default function ProfileScreen() {
 	const [auth] = useAtom(authAtom);
 	const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
+	const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
 	const [classrooms, setClassrooms] = useState<IClassroom[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
@@ -60,7 +63,11 @@ export default function ProfileScreen() {
 						alignItems='center'
 					>
 						<Flex align='center' gap={6}>
-							<Avatar size='xl' name={user.username} src={user.avatar ?? ''} />
+							<Avatar
+								size='xl'
+								name={user.username}
+								src={user?.avatar ? `${CDN_URL}/avatars/${user.id}/${user.avatar}.png` : ''}
+							/>
 							<VStack align='start' spacing={1}>
 								<Heading size='lg'>{user.username}</Heading>
 								<Text color='gray.400'>{user.email}</Text>
@@ -71,7 +78,7 @@ export default function ProfileScreen() {
 							<Button leftIcon={<FiPlus />} colorScheme='blue' onClick={onCreateOpen}>
 								Crear Clase
 							</Button>
-							<Button leftIcon={<FiUsers />} variant='outline'>
+							<Button leftIcon={<FiUsers />} variant='outline' onClick={onEditOpen}>
 								Editar cuenta
 							</Button>
 						</Flex>
@@ -120,6 +127,7 @@ export default function ProfileScreen() {
 			</Container>
 
 			<CreateClassModal isOpen={isCreateOpen} onClose={onCreateClose} onClassroomCreated={setClassrooms} />
+			<EditAccountModal isOpen={isEditOpen} onClose={onEditClose} />
 		</Box>
 	) : (
 		<></>
