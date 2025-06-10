@@ -1,6 +1,7 @@
 import { API_URL } from '@/constants/constants';
 import type { IActivity } from '@/types/IActivity';
 import type { IClassroom } from '@/types/IClassroomCard';
+import type { ISubmission } from '@/types/ISubmission';
 import type { IUser } from '@/types/IUser';
 
 const getAuthHeaders = (): Record<string, string> => {
@@ -143,6 +144,65 @@ export const api = {
 			);
 
 			if (!res.ok) throw new Error('Failed to fetch activity');
+			return res.json();
+		},
+
+		getSubmissionUrl: async (
+			classroomId: string,
+			activityId: string,
+			filename: string,
+			comment: string
+		): Promise<{ url: string }> => {
+			const res = await fetch(
+				`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities/${encodeURIComponent(
+					activityId
+				)}/submissions`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						...getAuthHeaders()
+					},
+					body: JSON.stringify({ filename, comment })
+				}
+			);
+
+			if (!res.ok) throw new Error('Failed to get submission URL');
+			return res.json();
+		},
+
+		getAllSubmissions: async (
+			classroomId: string,
+			activityId: string
+		): Promise<(ISubmission & { user: IUser })[]> => {
+			const res = await fetch(
+				`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities/${encodeURIComponent(
+					activityId
+				)}/submissions/all`,
+				{
+					headers: {
+						...getAuthHeaders()
+					}
+				}
+			);
+
+			if (!res.ok) throw new Error('Failed to fetch submissions');
+			return res.json();
+		},
+
+		getUserSubmission: async (classroomId: string, activityId: string): Promise<ISubmission> => {
+			const res = await fetch(
+				`${API_URL}/classrooms/${encodeURIComponent(classroomId)}/activities/${encodeURIComponent(
+					activityId
+				)}/submissions`,
+				{
+					headers: {
+						...getAuthHeaders()
+					}
+				}
+			);
+
+			if (!res.ok) throw new Error('Failed to fetch user submission');
 			return res.json();
 		},
 

@@ -1,10 +1,14 @@
 'use client';
 
 import { api } from '@/api/api';
+import { CDN_URL } from '@/constants/constants';
 import { authAtom } from '@/store/auth';
 import type { IActivity } from '@/types/IActivity';
 import type { IClassroom } from '@/types/IClassroomCard';
+import type { ISubmission } from '@/types/ISubmission';
+import type { IUser } from '@/types/IUser';
 import {
+	Avatar,
 	Badge,
 	Box,
 	Button,
@@ -55,6 +59,9 @@ export default function ActivityScreen({
 	const [activity, setActivity] = useState<IActivity | null>(null);
 	const [classroom, setClassroom] = useState<IClassroom | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
+	const [submissions, setSubmissions] = useState<(ISubmission & { user: IUser })[]>([]);
+	const [userSubmission, setUserSubmission] = useState<ISubmission | null>(null);
+	const [isLoadingSubmissions, setIsLoadingSubmissions] = useState(false);
 	const [files, setFiles] = useState<File[]>([]);
 	const [comment, setComment] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -119,6 +126,29 @@ export default function ActivityScreen({
 
 				setActivity(activityData);
 				setClassroom(classroomData);
+
+				if (classroomData.owner === auth.user?.id && activityData.type === 'assignment') {
+					setIsLoadingSubmissions(true);
+					try {
+						const submissionsData = await api.activities.getAllSubmissions(classroomId, activityId);
+						setSubmissions(submissionsData);
+					} catch (error) {
+						console.error('Failed to fetch submissions:', error);
+					} finally {
+						setIsLoadingSubmissions(false);
+					}
+				} else if (activityData.type === 'assignment') {
+					setIsLoadingSubmissions(true);
+					try {
+						const submission = await api.activities.getUserSubmission(classroomId, activityId);
+						setUserSubmission(submission);
+						setHasSubmitted(true);
+					} catch (error) {
+						console.error('Failed to fetch user submission:', error);
+					} finally {
+						setIsLoadingSubmissions(false);
+					}
+				}
 			} catch {
 				toast({
 					title: 'Error',
@@ -135,7 +165,7 @@ export default function ActivityScreen({
 		};
 
 		fetchData();
-	}, [activityId, classroomId, toast]);
+	}, [activityId, classroomId, toast, auth.user?.id]);
 
 	const handleSubmit = async () => {
 		if (files.length === 0) {
@@ -151,20 +181,45 @@ export default function ActivityScreen({
 		}
 
 		setIsSubmitting(true);
+		try {
+			for (const file of files) {
+				const { url } = await api.activities.getSubmissionUrl(classroomId, activityId, file.name, comment);
 
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+				const uploadRes = await fetch(url, {
+					method: 'PUT',
+					body: file,
+					headers: {
+						'Content-Type': file.type
+					}
+				});
 
-		toast({
-			title: 'Éxito',
-			description: 'Tu tarea ha sido enviada correctamente',
-			status: 'success',
-			position: 'top-right',
-			duration: 3000,
-			isClosable: true
-		});
+				if (!uploadRes.ok) {
+					throw new Error(`Failed to upload file ${file.name}`);
+				}
+			}
 
-		setHasSubmitted(true);
-		setIsSubmitting(false);
+			toast({
+				title: 'Éxito',
+				description: 'Tu tarea ha sido enviada correctamente',
+				status: 'success',
+				position: 'top-right',
+				duration: 3000,
+				isClosable: true
+			});
+
+			setHasSubmitted(true);
+		} catch (error) {
+			toast({
+				title: 'Error',
+				description: error instanceof Error ? error.message : 'Ha ocurrido un error al enviar la tarea',
+				status: 'error',
+				position: 'top-right',
+				duration: 3000,
+				isClosable: true
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	if (isLoading) {
@@ -368,6 +423,92 @@ export default function ActivityScreen({
 								</Box>
 							)}
 
+							{isProfessor && isAssignment && (
+								<Box
+									bg='brand.dark.900'
+									p={6}
+									borderRadius='xl'
+									border='1px solid'
+									borderColor='brand.dark.800'
+								>
+									<Heading size='md' mb={4}>
+										Entregas de Estudiantes
+									</Heading>
+									{isLoadingSubmissions ? (
+										<Flex justify='center' py={4}>
+											<Spinner />
+										</Flex>
+									) : submissions.length > 0 ? (
+										<VStack spacing={4} align='stretch'>
+											{submissions.map((submission) => (
+												<Box key={submission.id} p={4} bg='brand.dark.800' borderRadius='lg'>
+													<Flex justify='space-between' align='center' mb={3}>
+														<Flex align='center' gap={3}>
+															<Avatar
+																size='sm'
+																name={submission.user?.username}
+																src={
+																	submission.user?.avatar
+																		? `${CDN_URL}/avatars/${submission.user?.id}/${submission.user?.avatar}.png`
+																		: ''
+																}
+															/>
+															<VStack align='start' spacing={0}>
+																<Text fontWeight='bold'>
+																	{submission.user?.username}
+																</Text>
+																<Text fontSize='sm' color='gray.400'>
+																	Entregado el{' '}
+																	{format(
+																		new Date(submission.submittedAt),
+																		"d 'de' MMMM 'a las' HH:mm",
+																		{ locale: es }
+																	)}
+																</Text>
+															</VStack>
+														</Flex>
+													</Flex>
+													<VStack align='stretch' spacing={2}>
+														{submission.comment && (
+															<Text>
+																<b>Comentario</b>: {submission.comment}
+															</Text>
+														)}
+														{submission.files.map((file, index) => (
+															<Flex
+																key={index}
+																justify='space-between'
+																align='center'
+																p={2}
+																bg='brand.dark.900'
+																borderRadius='md'
+															>
+																<Text fontSize='sm'>{file.name}</Text>
+																<Link
+																	href={`${CDN_URL}/submissions/${file.url}`}
+																	isExternal
+																	_hover={{ textDecoration: 'none' }}
+																>
+																	<Button
+																		size='sm'
+																		variant='ghost'
+																		leftIcon={<FiDownload />}
+																	>
+																		Descargar
+																	</Button>
+																</Link>
+															</Flex>
+														))}
+													</VStack>
+												</Box>
+											))}
+										</VStack>
+									) : (
+										<Text color='gray.400'>Aún no hay entregas para esta tarea.</Text>
+									)}
+								</Box>
+							)}
+
 							{!isProfessor && isAssignment && (
 								<Box
 									bg='brand.dark.900'
@@ -379,10 +520,68 @@ export default function ActivityScreen({
 									<Heading size='md' mb={4}>
 										Enviar Tarea
 									</Heading>
-									{hasSubmitted ? (
-										<Text color='green.400'>
-											¡Tu tarea ha sido enviada! El profesor la revisará pronto.
-										</Text>
+									{isLoadingSubmissions ? (
+										<Flex justify='center' py={4}>
+											<Spinner />
+										</Flex>
+									) : hasSubmitted ? (
+										<VStack spacing={4} align='stretch'>
+											<Text color='green.400' mb={2}>
+												¡Tu tarea ha sido enviada! El profesor la revisará pronto.
+											</Text>
+											{userSubmission && (
+												<Box>
+													{userSubmission.comment && (
+														<Text fontWeight='semibold' color='gray.100'>
+															Comentario:
+														</Text>
+													)}
+													{userSubmission.comment && (
+														<Text mb={4}>{userSubmission.comment}</Text>
+													)}
+													<Text fontWeight='semibold' color='gray.1s00' mb={2}>
+														Archivos enviados:
+													</Text>
+													<VStack spacing={2} align='stretch'>
+														{userSubmission.files.map((file, index) => (
+															<Flex
+																key={index}
+																justify='space-between'
+																align='center'
+																p={2}
+																bg='brand.dark.800'
+																borderRadius='md'
+															>
+																<Text color='gray.300' fontSize='sm'>
+																	{file.name}
+																</Text>
+																<Link
+																	href={`${CDN_URL}/submissions/${file.url}`}
+																	isExternal
+																	_hover={{ textDecoration: 'none' }}
+																>
+																	<Button
+																		size='sm'
+																		variant='ghost'
+																		leftIcon={<FiDownload />}
+																	>
+																		Descargar
+																	</Button>
+																</Link>
+															</Flex>
+														))}
+													</VStack>
+													<Text fontSize='sm' color='gray.400' mt={2}>
+														Enviado el{' '}
+														{format(
+															new Date(userSubmission.submittedAt),
+															"d 'de' MMMM 'a las' HH:mm",
+															{ locale: es }
+														)}
+													</Text>
+												</Box>
+											)}
+										</VStack>
 									) : (
 										<VStack spacing={4} align='stretch'>
 											<Box
