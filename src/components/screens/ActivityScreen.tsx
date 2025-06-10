@@ -29,6 +29,7 @@ import {
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useAtom } from 'jotai';
+import NextLink from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FiCalendar, FiDownload, FiExternalLink, FiFileText, FiSend, FiUpload, FiX } from 'react-icons/fi';
@@ -194,7 +195,13 @@ export default function ActivityScreen({
 								>
 									{activityTypeInfo[activity.type].label}
 								</Badge>
-								<Link color='gray.400'>{classroom.name}</Link>
+								<Link
+									color='gray.400'
+									href={`/classes/${encodeURIComponent(classroomId)}`}
+									as={NextLink}
+								>
+									{classroom.name}
+								</Link>
 							</Flex>
 							<Heading
 								as='h1'
